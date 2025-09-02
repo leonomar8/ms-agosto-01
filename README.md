@@ -45,3 +45,18 @@ docker run --name ms-agosto-01-qa -d -p 9091:8888 -e MESSAGE="hola calidad" maur
 
 # prd
 docker run --name ms-agosto-01-prd -d -p 9092:8888 -e MESSAGE="hola prod" mauron/ms-agosto-01:v3
+
+# Docker compose
+
+docker compose up -d
+
+
+sonar url: http://localhost:9001
+sonar token: squ_7665578e41538f3b3a7438ee18500f39b107c8e8
+
+
+mvn clean verify sonar:sonar \
+  -Dsonar.projectKey=ms-agosto-01 \
+  -Dsonar.projectName=ms-agosto-01 \
+  -Dsonar.host.url=http://localhost:9001 \
+  -Dsonar.token=squ_7665578e41538f3b3a7438ee18500f39b107c8e8

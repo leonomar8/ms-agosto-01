@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.lite</groupId>
 	<artifactId>ms-agosto-01</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<name>ms-agosto-01</name>
 	<description>micro en sb</description>
 	<url/>

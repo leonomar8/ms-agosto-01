@@ -1,5 +1,6 @@
     services:
       jenkins:
+        container_name: jenkins
         image: jenkins/jenkins:lts
         privileged: true
         ports:
@@ -9,6 +10,12 @@
           - jenkins_home:/var/jenkins_home
         environment:
           - JAVA_OPTS=-Djenkins.install.runSetupWizard=true
+        networks:
+          - devops
 
     volumes:
       jenkins_home:
+    
+    networks:
+      devops:
+        external: true
