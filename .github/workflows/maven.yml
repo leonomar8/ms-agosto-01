@@ -25,21 +25,3 @@ jobs:
     - name: Build with Maven
       run: mvn package
 
-    - name: Buscar jar
-      run: |
-        ls -al target/*.jar
-    
-    - name: build image
-      run: |
-        echo "Building Docker image..."
-        docker build -t mauron/ms-agosto-01:v1 .
-    
-    - name: login docker
-      run: |
-        echo "Logging in to Docker..."
-        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-    - name: Push Docker image
-      run: |
-        echo "Pushing Docker image..."
-        docker push mauron/ms-agosto-01:v1
