@@ -1,21 +1,50 @@
-    services:
-      jenkins:
-        container_name: jenkins
-        image: jenkins/jenkins:lts
-        privileged: true
-        ports:
-          - "5080:8080"
-          - "50000:50000"
-        volumes:
-          - jenkins_home:/var/jenkins_home
-        environment:
-          - JAVA_OPTS=-Djenkins.install.runSetupWizard=true
-        networks:
-          - devops
+version: "3.9"
 
+services:
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins:lts
+    privileged: true
+    ports:
+      - "5080:8080"   # host:container mapping for web UI
+      - "50000:50000" # JNLP agent port (not needed with WebSocket)
     volumes:
-      jenkins_home:
-    
+      - jenkins_home:/var/jenkins_home
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=true
+      - TZ=America/Chicago
     networks:
-      devops:
-        external: true
+      - devops
+
+  slave:
+    container_name: slave
+    build:
+      context: .
+      dockerfile: Dockerfile
+    init: true
+    group_add:
+      - "986"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock   # access host Docker
+      - /usr/bin/docker:/usr/bin/docker             # Docker CLI
+      - slave_home:/home/jenkins/agent              # workDir inside container
+      - /home/omar/.m2:/home/jenkins/.m2           # Maven cache
+    environment:
+      - TZ=America/Chicago
+    command: >
+      java -jar /usr/share/jenkins/agent.jar
+      -url http://jenkins:8080
+      -secret 30f508889277099696fa8628769998601f5522c276811c6836f3a346fa6a720f
+      -name slave
+      -webSocket
+      -workDir /home/jenkins/agent
+    networks:
+      - devops
+
+volumes:
+  jenkins_home:
+  slave_home:
+
+networks:
+  devops:
+    external: true
