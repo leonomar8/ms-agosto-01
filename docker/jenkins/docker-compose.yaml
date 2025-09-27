@@ -41,9 +41,35 @@ services:
     networks:
       - devops
 
+  slave2:
+    container_name: slave2
+    build:
+      context: .
+      dockerfile: Dockerfile
+    init: true
+    group_add:
+      - "986"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock   # access host Docker
+      - /usr/bin/docker:/usr/bin/docker             # Docker CLI
+      - slave_home2:/home/jenkins/agent              # workDir inside container
+      - /home/omar/.m2:/home/jenkins/.m2           # Maven cache
+    environment:
+      - TZ=America/Chicago
+    command: >
+      java -jar /usr/share/jenkins/agent.jar
+      -url http://jenkins:8080
+      -secret 690bd8b422d7dc521418f7fc91d77f5aa04ebd6490f29af620ddf91c6a22670e
+      -name slave2
+      -webSocket
+      -workDir /home/jenkins/agent
+    networks:
+      - devops
+
 volumes:
   jenkins_home:
   slave_home:
+  slave_home2:
 
 networks:
   devops:

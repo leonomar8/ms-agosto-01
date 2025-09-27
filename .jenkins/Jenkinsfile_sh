@@ -1,0 +1,62 @@
+pipeline {
+    agent { label 'slave' }
+
+    environment {
+        REGISTRY = 'omarleon'                                       //docker registry
+        SONAR_HOST_URL = 'http://sonarqube:9001'
+    }
+    
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git(
+                    url: 'https://github.com/leonomar8/ms-agosto-01.git',
+                    branch: 'main',
+                    credentialsId: 'github-token'                   //Jenkins secret
+                )
+            }
+        }
+        
+        stage('Build with Maven') {
+            steps {
+                sh "mvn clean package -DskipTests"
+            }
+        }
+        
+        stage('SonarQube Analysis') {
+            steps {
+                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {          //Jenkins secret
+                    sh """
+                        mvn clean verify sonar:sonar \
+                          -Dsonar.projectKey=ms-agosto-01 \
+                          -Dsonar.projectName=ms-agosto-01 \
+                          -Dsonar.host.url=${SONAR_HOST_URL} \
+                          -Dsonar.token=${SONAR_TOKEN}
+                    """
+                }
+            }
+        }
+        
+        stage('Build & Push Docker Image') {
+            steps {
+                script {
+                    def imageTag = "${REGISTRY}/ms-agosto-01:${BUILD_NUMBER}"               //Jenkins internal variable
+                    
+                    sh "docker build -t ${imageTag} ."
+                    
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
+                    }
+                    
+                    sh "docker push ${imageTag}"
+                }
+            }
+        }
+
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+    }
+}

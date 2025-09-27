@@ -1,0 +1,58 @@
+pipeline {
+    agent { label 'slave' }
+
+    environment {
+        REGISTRY = 'omarleon'
+    }
+    
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git(
+                    url: 'https://github.com/leonomar8/ms-agosto-01.git',
+                    branch: 'main',
+                    credentialsId: 'github-token'
+                )
+            }
+        }
+        
+        stage('Build with Maven') {
+            steps {
+                sh "mvn clean package -DskipTests"
+            }
+        }
+        
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    withSonarQubeEnv('sonar') {
+                        sh """
+                        mvn clean verify sonar:sonar \
+                          -Dsonar.projectKey=ms-agosto-01 \
+                          -Dsonar.projectName=ms-agosto-01
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Build & Push Docker Image') {
+            steps {
+                script {
+                    def imageTag = "${REGISTRY}/ms-agosto-01:${BUILD_NUMBER}"
+
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
+                        def customImage = docker.build(imageTag)
+                        customImage.push()
+                    }
+                }
+            }
+        }                
+
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+    }
+}
