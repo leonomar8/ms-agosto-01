@@ -1,10 +1,10 @@
 services:
   ms-agosto-01-java:
     container_name: ms-agosto-01-java
-    image: mauron/ms-agosto-01:v3
+    image: omarleon/ms-agosto-01:TAG
     ports:
       - "9090:8888"
     environment:
       - MESSAGE=hola microservicio java
-      - TZ=Americas/Bogota
+      - TZ=Americas/Chicago
     restart: unless-stopped

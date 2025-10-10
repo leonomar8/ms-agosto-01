@@ -1,0 +1,74 @@
+
+name: Remote Agent Java CI with Maven
+
+on:
+  push:
+    branches: [ "dev"]
+  pull_request:
+    branches: [ "dev" ]
+
+env:
+  REGISTRY: omarleon
+  SONAR_HOST_URL: http://localhost:9001
+
+jobs:
+  ci:
+
+    #runs-on: ubuntu-latest
+    runs-on: profe
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Build with Maven
+      run: mvn package
+
+    - name: Buscar jar
+      run: |
+        ls -al target/*.jar
+   
+    
+    - name: sonarqube
+      run: |
+        echo "Run SonarQube analysis manually..."
+        mvn clean verify sonar:sonar \
+            -Dsonar.projectKey=ms-agosto-01 \
+            -Dsonar.projectName=ms-agosto-01 \
+            -Dsonar.host.url=${{ env.SONAR_HOST_URL }} \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+
+    - name: build image
+      run: |
+        echo "Building Docker image..."
+        docker build -t ${{ env.REGISTRY }}/${{ github.event.repository.name }}:${{ github.run_number}} .
+
+    - name: login docker
+      run: |
+        echo "Logging in to Docker..."
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Push Docker image
+      run: |
+        echo "Pushing Docker image..."
+        docker push ${{ env.REGISTRY }}/${{ github.event.repository.name }}:${{ github.run_number}}
+  
+  cd:
+
+    #runs-on: ubuntu-latest
+    runs-on: profe
+
+    needs: ci
+
+    steps:
+
+      - name: Notificar
+        if: always()
+        run: |
+          echo "Paralelo al job anterior"
