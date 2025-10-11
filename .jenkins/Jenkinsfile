@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         REGISTRY = 'omarleon'
-        URL_PRD = https://prd.omarleon.com 
-        URL_DEV = https://dev.omarleon.com
+        URL_PRD = 'https://prd.omarleon.com' 
+        URL_DEV = 'https://dev.omarleon.com'
     }
      
     stages {
