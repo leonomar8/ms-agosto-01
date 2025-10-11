@@ -67,7 +67,7 @@ pipeline {
                         sh "cat docker-compose.yaml"
                         
                         // Run Docker Compose
-                        sh "docker compose up -d"
+                        sh "docker-compose up -d"
                     }
                 }
             }
