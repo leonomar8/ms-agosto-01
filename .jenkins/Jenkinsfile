@@ -6,7 +6,7 @@ pipeline {
         URL_PRD = https://prd.omarleon.com 
         URL_DEV = https://dev.omarleon.com
     }
-    
+     
     stages {
         stage('Clone Repository') {
             steps {
