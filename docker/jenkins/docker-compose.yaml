@@ -25,10 +25,11 @@ services:
     group_add:
       - "986"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock   # access host Docker
-      - /usr/bin/docker:/usr/bin/docker             # Docker CLI
-      - slave_home:/home/jenkins/agent              # workDir inside container
-      - /home/omar/.m2:/home/jenkins/.m2           # Maven cache
+      - /var/run/docker.sock:/var/run/docker.sock                 # access host Docker
+      - /usr/bin/docker:/usr/bin/docker                           # Docker CLI
+      - /usr/lib/docker/cli-plugins:/usr/lib/docker/cli-plugins   # to use docker compose
+      - slave_home:/home/jenkins/agent                            # workDir inside container
+      - /home/omar/.m2:/home/jenkins/.m2                          # Maven cache
     environment:
       - TZ=America/Chicago
     command: >
@@ -50,10 +51,11 @@ services:
     group_add:
       - "986"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock   # access host Docker
-      - /usr/bin/docker:/usr/bin/docker             # Docker CLI
-      - slave_home2:/home/jenkins/agent              # workDir inside container
-      - /home/omar/.m2:/home/jenkins/.m2           # Maven cache
+      - /var/run/docker.sock:/var/run/docker.sock                 # access host Docker
+      - /usr/bin/docker:/usr/bin/docker                           # Docker CLI
+      - /usr/lib/docker/cli-plugins:/usr/lib/docker/cli-plugins   # to use docker compose
+      - slave_home2:/home/jenkins/agent                           # workDir inside container
+      - /home/omar/.m2:/home/jenkins/.m2                          # Maven cache
     environment:
       - TZ=America/Chicago
     command: >
