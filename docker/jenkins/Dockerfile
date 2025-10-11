@@ -15,5 +15,10 @@ RUN wget https://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/a
     && mv /opt/apache-maven-$MAVEN_VERSION $MAVEN_HOME \
     && rm /tmp/maven.zip
 
+# Install Docker Compose plugin (v2)
+RUN mkdir -p /usr/lib/docker/cli-plugins \
+ && curl -SL https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-linux-x86_64 -o /usr/lib/docker/cli-plugins/docker-compose \
+ && chmod +x /usr/lib/docker/cli-plugins/docker-compose
+    
 # Switch back to jenkins user
 USER jenkins
