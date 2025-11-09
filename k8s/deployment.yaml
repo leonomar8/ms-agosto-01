@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-agosto-01-java
+  namespace: demo
+  labels:
+    app: ms-agosto-01-java
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ms-agosto-01-java
+  template:
+    metadata:
+      labels:
+        app: ms-agosto-01-java
+    spec:
+      containers:
+        - name: ms-agosto-01-java
+          image: omarleon/ms-agosto-01:13
+          ports:
+            - containerPort: 8888
+          env:
+            - name: MESSAGE
+              value: "Saludos desde K3s para el RETO 3 DEVSECOPS"
+            - name: TZ
+              value: "America/Chicago"
